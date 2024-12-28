@@ -1,16 +1,22 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\User;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Asset\Asset;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<\Database\Factories\User\UserFactory> */
     use HasFactory, Notifiable;
+
+    public function Economy()
+    {
+        return $this->hasOne(Economy::class, 'user_id',"id");
+    }
 
     /**
      * The attributes that are mass assignable.
