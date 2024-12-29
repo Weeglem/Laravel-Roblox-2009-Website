@@ -11,17 +11,32 @@
     <meta name="keywords" content="game, video game, building game, construction game, online game, LEGO game, LEGO, MMO, MMORPG, rowblocks, rowbloks, robloks, roblocs, roblok" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ asset("css/AllCSS.css")}}">
-    
+    <link rel="stylesheet" href="{{ asset("css/NETajax.css")}}">
+
+
     <title>Document</title>
 </head>
 <body>
+
+    @stack("Extra_Views")
     <div id="Container">
         @include("Website.Templates.Header")
         <div id="Body">
             @yield('Content')
             @include("Website.Templates.Footer")
-        </div> 
+        </div>
     </div>
+
+    {{--Required scripts --}}
+    <script src="{{asset("js/Web_ASP_CardHandler.js")}}"></script>
+
+    {{-- Pages exclusives --}}
+    @stack("Extra_Scripts")
+
+    <!--Debug-->
     <script src="{{asset("js/Roblox/Web_GameLauncher.js")}}"></script>
+    <script src="{{asset("js/Web_Catalog_FavoriteController.js")}}"></script>
+
+
 </body>
 </html>

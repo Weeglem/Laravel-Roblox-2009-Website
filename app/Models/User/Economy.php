@@ -10,91 +10,59 @@ class Economy extends Model
     protected $table = "users_economy";
     public $timestamps = false;
 
-    static public function BuyClothes($AssetID = 0,$withRobux = false)
+    /**Models,Decals, Free*/
+    static public function BuyFreeItem($UserID = 1, $AssetID = 0)
     {
         $Asset = Asset::find($AssetID);
-        $User = User::find(1);
+        $User = User::find($UserID); //TODO:SET AUTH ID
 
         if(Inventory::userOwnsItem($User->id, $Asset->id)){
-            return response()->json([
-                "message" => "you already own $Asset->name",
-                "code" => 404
-            ]);
+            throw new \Exception("You already own this item",303);
         }
 
-        if($withRobux == false){
-            $Price = $Asset->Config->price_ticket;
-            $UserWallet = $User->Economy->tickets;
-            $DisplayEconomy = "Tickets";
-        }else{
-            $Price = $Asset->Config->price_robux;
-            $UserWallet = $User->Economy->robuxs;
-            $DisplayEconomy = "Robux";
+        $Config = $Asset->Config;
+
+        if($Config->on_sale != 1 || $Config->price_free != 1)
+        {
+            throw new \Exception("This item is not available for sale",404);
         }
 
+        Inventory::userAddItem($User->id, $Asset->id);
 
-        //BUY ITEM
-        if($UserWallet == $Price || $UserWallet >= $Price){
-            Inventory::userAddItem($User->id,$Asset->id);
-
-            if($withRobux)
-            {
-                $User->Economy()->update(["robuxs" => $UserWallet - $Price]);
-            }else{
-                $User->Economy()->update(["tickets" => $UserWallet - $Price]);
-            }
-
-
-            return response()->json([
-                "message" => "$Asset->name was added to your inventory.",
-                "code" => 200
-            ]);
-        }
-
-        //REJECTED PURCHASE
-        return response()->json([
-            "message" => "You dont have enough $DisplayEconomy to buy this item.",
-            "code" => 300
-        ]);
-
+        //echo "OnSale : $Config->on_sale <br>";
+        //echo "Price_free : $Config->price_free <br>";
     }
 
-    static public function BuyModel($AssetID = 0)
+
+    static public function BuyWalletItem($UserID = 1,$AssetID = 0,$withRobux = false)
     {
+
         $Asset = Asset::find($AssetID);
-        $User = User::find(1); //MY ID PLACEHOLDER
+        $User = User::find($UserID); //TODO:SET AUTH ID
 
-        //USER OWNS MODEL
         if(Inventory::userOwnsItem($User->id, $Asset->id)){
-            return response()->json([
-                "message" => "you already own $Asset->name",
-                "code" => 404
-            ]);
+            throw new \Exception("You already own this item",303);
         }
 
-        //FILTER ONLY MODELS
-        if($Asset->type != "model")
-        {
-            return response()->json([
-                "message" => "This item isnt a model",
-                "code" => 404
-            ]);
+        //GET USER WALLET AND ITEM WORTH
+        if(!$withRobux){
+            //TICKETS
+            $Price = $Asset->Config->price_ticket;  //GET ITEM PRICE
+            $UserWallet = $User->Economy->ticket;   //GET TOTAL FROM USER WALLET
+            $WalletType = "ticket"; //SET WALLET
+        }else{
+            //ROBUXS
+            $Price = $Asset->Config->price_robux;   //GET ITEM PRICE
+            $UserWallet = $User->Economy->robux;    //GET TOTAL FROM USER WALLET
+            $WalletType = "robux";  //SET WALLET
         }
 
-        //NOT FREE MODEL
-        if($Asset->Config->is_free_model != 1)
-        {
-            return response()->json([
-                "message" => "This item isnt open for sale",
-                "code" => 303
-            ]);
+        //DO SALE
+        if($UserWallet >= $Price) {
+            Inventory::userAddItem($User->id, $Asset->id); //ADD ITEM
+            $User->Economy()->decrement($WalletType,$Price); //DECREMENT USER REQUESTED PAY TYPE
+        }else{
+            throw new \Exception("You don't have enough ".$WalletType."s to buy this item",303);
         }
-
-        Inventory::userAddItem($User->id,$Asset->id);
-
-        return response()->json([
-            "message" => "$Asset->name was added to your inventory.",
-            "code" => 200
-        ]);
     }
 }

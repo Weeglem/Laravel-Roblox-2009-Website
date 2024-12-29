@@ -4,38 +4,58 @@ namespace App\Http\Controllers\api\Economy;
 use App\Http\Controllers\Controller;
 use App\Models\Asset\Asset;
 use App\Models\User\Economy;
+use App\Models\User\Inventory;
 use Illuminate\Http\Request;
+use Illuminate\Auth;
+use mysql_xdevapi\Exception;
 
 
 class BuyItemController extends Controller
 {
-    public function __invoke(Request $request)
+    public function buyItem(Request $request)
     {
-        $AssetID = $request->ItemID;
-        $Type = $request->Type;
+        try {
+            $AssetID = $request->ItemID;
+            $WalletType = $request->WalletType;
 
-        //DETERMINE ITEM TYPE
 
-        $Item = Asset::find($AssetID);
+            $Item = Asset::find($AssetID);
 
-        //TODO: DENY GAMES BUY
-        switch($Item->Type){
-            //MODEL BUY
-            case "model":
-                return Economy::BuyModel($Item->id);
-            break;
+            switch ($Item->type) {
+                //MODEL BUY
+                case "model":
+                    Economy::BuyFreeItem(1, $AssetID);
+                    break;
 
-            //GAME BUY
-            case "game":
-                return response()->json(["message" => "You can't buy this item"], 403);
-            break;
+                case "cloth":
 
-            //CLOTHES BUY
-            default:
-                $Type = $Type == "Robux";
-                return Economy::BuyClothes($Item->id,$Type);
-            break;
+                    //ADD FREE ITEM SUPPORT
+                    $WalletType = $WalletType == "robux" ? "robux" : "ticket";
+                    Economy::BuyWalletItem(1, $AssetID, $WalletType);
+                    break;
+
+                default:
+                    throw new \Exception("You can't buy this item.",303);
+                    break;
+            }
+
+            return response()->json([
+                "message" => "Item was added succesfuly to your inventory.",
+                "code" => 200,
+            ]);
+        }catch (\Exception $exception){
+            return response()->json([
+                "message" => $exception->getMessage(),
+                "code" => $exception->getCode(),
+            ],$exception->getCode());
         }
 
+    }
+
+    public function checkItem(Request $request)
+    {
+        $AssetID = $request->ItemID;
+        $UserID = 1;
+        return response()->json(Inventory::userOwnsItem($UserID, $AssetID));
     }
 }

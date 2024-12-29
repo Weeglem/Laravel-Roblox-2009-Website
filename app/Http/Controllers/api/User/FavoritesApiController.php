@@ -80,4 +80,10 @@ class FavoritesApiController extends Controller
                 ]);
         }
     }
+
+    public function checkFavorite(Request $request)
+    {
+        $AssetID = $request->ItemID;
+        return response()->json(["case" => Favorites::checkFavorite($AssetID)]);
+    }
 }

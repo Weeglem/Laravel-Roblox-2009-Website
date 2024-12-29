@@ -1,7 +1,7 @@
 @extends('Website.Templates.PageView')
 
 @section('Content')
-<form id="EditItemContainer" method="POST" action="{{ route("UpdateAsset_Post",["id" => $ItemData->id ]) }}">
+<form id="EditItemContainer" method="POST" action="{{ route("editItem_post",["id" => $ItemData->id ]) }}">
     <div id="EditItem" style="float:none;margin:0 auto;">
         <h2>Configure T-Shirt</h2>
         <div id="ItemName">

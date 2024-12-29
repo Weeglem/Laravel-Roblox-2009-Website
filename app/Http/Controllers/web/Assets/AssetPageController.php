@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Asset\Asset;
 use App\Models\Asset\AssetConfig;
 use App\Models\Asset\Comment;
+use App\Models\User\Favorites;
 use Illuminate\Http\Request;
 
 
@@ -12,24 +13,34 @@ class AssetPageController extends Controller
 {
     public function view(Request $request)
     {
+        //CALL ASSET
         $ItemID = $request->id;
-        $Asset = Asset::with("Config","Comments")->find($ItemID);
+        $Asset = Asset::with("Config","Comments")->withCount("Favorites")->find($ItemID);
         $AssetConfig = $Asset->config;
         $Type = strtolower($Asset->type);
+        $Final = $Type == "game" ? "Website.Items.Game" : "Website.Items.Item"; //LOAD VIEW
 
-        //Makes Items.game exclusives to games assets
-        $Final = $Type == "game" ? "Website.Items.Game" : "Website.Items.Item";
-        $Comments = $Asset->comments()->paginate(11);
-        $EditMode = true;
+        //OTHER VALS
+        $Comments = $Asset->comments()->paginate(11); //GET COMMENTS
+        $EditMode = true;  //SHOWS CONFIGURATE ITEM PANEL AND HIDES REPORT BUTTON
+        $Favorited = Favorites::CheckFavorite($ItemID); //GET IS FAVORITE FROM USER BOOLEAN
+        $GameAccess = null; //GAME ACCESS TYPES:
+                            //0 = Public,
+                            //1 = Friends not allowed,
+                            //2 = Friends you're allowed,
+                            //3 = Closed to everyone,
 
+        //SET VARAIBLE ONLY IF TYPE IS GAME
+        if($Type == "game"){ $GameAccess = 1;}
 
         return view($Final)->with([
             "ItemData" => $Asset,
             "ItemConfig" => $AssetConfig,
             "ItemOwner"=> $Asset->Owner,
             "ItemComments" => $Comments,
-            "EditMode" => $EditMode
-
+            "EditMode" => $EditMode,
+            "Favorited" => $Favorited,
+            "GameAccess" => $GameAccess,
         ]);
     }
 
@@ -40,30 +51,20 @@ class AssetPageController extends Controller
         $AssetConfig = $Asset->config;
         $Type = strtolower($Asset->type);
 
-        //Makes Items.game exclusives to games assets
-        $Final = $Type == "game" ? "Website.Edit.Game" : "Website.Edit.Item";
+
+        $Final = $Type == "game" ? "Website.Edit.Game" : "Website.Edit.Item"; //SETS VIEW
+        $PriceEditor = false;   //SHOW TICKET ROBUX PRICE MENU
 
         //TODO: Comments are loaded via Javascript?
         return view($Final)->with([
             "ItemData" => $Asset,
             "ItemConfig" => $AssetConfig,
+            "PriceEditor" => $PriceEditor,
         ]);
-    }
-
-    public function postComment(Request $request)
-    {
-        $Comment = new Comment([
-            "asset_id" => $request->id,
-            "user_id" => 1,
-            "comment" => $request->message
-        ]);
-
-        $Comment->save();
-
-        return redirect()->back();
     }
 
     //TODO: ADD WIPE GAME
+    //TODO: CUSTOM REQUEST
     public function update(Request $request)
     {
         //GET ITEM FROM ID
@@ -77,19 +78,18 @@ class AssetPageController extends Controller
         //ITEM SETTINGS HANDLER
         switch(strtolower($Asset->type))
         {
-                //GAME
             case "game":
                 $AssetConfig->is_friends_only = $request->PlaceAccess == "PrivateAccess" ? 1 : 0; //FRIENDS ONLY
                 $AssetConfig->is_copylocked = $request->IsCopyProtected == "on" ? 1 : 0; //COPY LOCKED
+                $AssetConfig->comments_allowed = 1;; //ALLOW COMMENTS ALWAYS
                 break;
 
-                //MODEL
             case "model":
-                $AssetConfig->on_sale = 1; //FREE MODEL
-                $AssetConfig->comments_allowed = 1;
+                $AssetConfig->on_sale = 1;           //FREE MODEL
+                $AssetConfig->price_free = 1;        //SET PRICE FREE
+                $AssetConfig->comments_allowed = 1;; //ALLOW COMMENTS ALWAYS
                 break;
 
-                //CLOTHES
             case "cloth":
                 $AssetConfig->on_sale = 1;  //IS FOR SALE
                 $AssetConfig->comments_allowed = $request->AllowedComments == "on" ? 1 : 0;

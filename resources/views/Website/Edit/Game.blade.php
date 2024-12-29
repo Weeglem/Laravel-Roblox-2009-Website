@@ -1,7 +1,7 @@
 @extends('Website.Templates.PageView')
 
 @section('Content')
-<form id="ConfigurePlaceContainer" method="POST" action="{{ route("UpdateAsset_Post",["id" => $ItemData->id ]) }}">
+<form id="ConfigurePlaceContainer" method="POST" action="{{ route("editItem_post",["id" => $ItemData->id ]) }}">
     <h2>Configure Place</h2>
 
     <div id="PlaceName">

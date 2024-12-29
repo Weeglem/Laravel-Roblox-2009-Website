@@ -46,6 +46,12 @@ class Favorites extends Model
         throw new \Exception("You dont have this item on favorites.",303);
     }
 
+    static public function checkFavorite($ItemID = 0)
+    {
+        $UserID = 1;
+        $AssetID = $ItemID;
+        return Favorites::where("user_id",$UserID)->where("asset_id",$AssetID)->limit(1)->exists();
+    }
     public function Asset()
     {
         return $this->belongsTo(Asset::class,'asset_id','id');
