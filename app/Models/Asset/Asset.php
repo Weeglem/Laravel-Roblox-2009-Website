@@ -3,6 +3,7 @@
 namespace App\Models\Asset;
 
 use App\Models\User\Favorites;
+use App\Models\User\Friend;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -42,4 +43,6 @@ class Asset extends Model
     {
         return $this->hasMany(Comment::class, 'asset_id', 'id');
     }
+
+
 }

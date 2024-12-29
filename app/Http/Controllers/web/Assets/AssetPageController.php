@@ -6,6 +6,7 @@ use App\Models\Asset\Asset;
 use App\Models\Asset\AssetConfig;
 use App\Models\Asset\Comment;
 use App\Models\User\Favorites;
+use App\Models\User\Inventory;
 use Illuminate\Http\Request;
 
 
@@ -24,14 +25,18 @@ class AssetPageController extends Controller
         $Comments = $Asset->comments()->paginate(11); //GET COMMENTS
         $EditMode = true;  //SHOWS CONFIGURATE ITEM PANEL AND HIDES REPORT BUTTON
         $Favorited = Favorites::CheckFavorite($ItemID); //GET IS FAVORITE FROM USER BOOLEAN
-        $GameAccess = null; //GAME ACCESS TYPES:
+        $GameAccess = $AssetConfig->AccessLevel(); //GAME ACCESS TYPES:
                             //0 = Public,
                             //1 = Friends not allowed,
                             //2 = Friends you're allowed,
                             //3 = Closed to everyone,
+        $OwnedItem = Inventory::userOwnsItem(1,$ItemID);
 
         //SET VARAIBLE ONLY IF TYPE IS GAME
-        if($Type == "game"){ $GameAccess = 1;}
+        if($Type == "game"){
+            //var_dump("Access level: ".$AssetConfig->AccessLevel());
+            $GameAccess = $AssetConfig->AccessLevel();
+        }
 
         return view($Final)->with([
             "ItemData" => $Asset,
@@ -41,6 +46,7 @@ class AssetPageController extends Controller
             "EditMode" => $EditMode,
             "Favorited" => $Favorited,
             "GameAccess" => $GameAccess,
+            "OwnedItem" => $OwnedItem,
         ]);
     }
 
@@ -55,7 +61,6 @@ class AssetPageController extends Controller
         $Final = $Type == "game" ? "Website.Edit.Game" : "Website.Edit.Item"; //SETS VIEW
         $PriceEditor = false;   //SHOW TICKET ROBUX PRICE MENU
 
-        //TODO: Comments are loaded via Javascript?
         return view($Final)->with([
             "ItemData" => $Asset,
             "ItemConfig" => $AssetConfig,

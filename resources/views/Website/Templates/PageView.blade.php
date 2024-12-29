@@ -19,12 +19,14 @@
 <body>
 
     @stack("Extra_Views")
+    <div id="MasterContainer">
     <div id="Container">
         @include("Website.Templates.Header")
         <div id="Body">
             @yield('Content')
             @include("Website.Templates.Footer")
         </div>
+    </div>
     </div>
 
     {{--Required scripts --}}
@@ -36,7 +38,5 @@
     <!--Debug-->
     <script src="{{asset("js/Roblox/Web_GameLauncher.js")}}"></script>
     <script src="{{asset("js/Web_Catalog_FavoriteController.js")}}"></script>
-
-
 </body>
 </html>

@@ -67,7 +67,7 @@
 
                             @else
 
-                                <p style="text-align: center;">There are no comments for this place.</p>
+                                <p style="text-align: center;">There are no comments for this item.</p>
 
                             @endif
 

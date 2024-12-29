@@ -11,7 +11,10 @@
         <div id="Summary">
             <h3>ROBLOX {{ucfirst($ItemData->type)}}</h3>
 
-            @if($ItemConfig->on_sale == 1)
+            @if($OwnedItem == true)
+                <p>You already own this item</p>
+            @else
+                @if($ItemConfig->on_sale == 1)
 
                 @if($ItemConfig->price_free == 1)
 
@@ -55,6 +58,7 @@
 
             @endif
 
+            @endif
             <div id="Creator">
                 <div class="Avatar">
                     <a id="ctl00_cphRoblox_AvatarImage" title="clockwork" href="/web/20080805100901/http://www.roblox.com/User.aspx?ID=19358" style="display:inline-block;cursor:pointer;"><img src="https://web.archive.org/web/20080805100901im_/http://t7.roblox.com:80/09656fe0be8b334427dc51c29d4752ae" border="0" alt="clockwork" blankurl="http://t6.roblox.com:80/blank-100x100.gif"></a>
@@ -64,7 +68,7 @@
 
 
             <div id="LastUpdate">Updated: {{$ItemData->LastUpdated()}}</div>
-            <div id="FavoritedLabel">Favorited: {{$ItemData->favorites_count}} times</div>
+            <div id="FavoritedLabel">Favorited: <span id="FavoritesCount">{{$ItemData->favorites_count}}</span> times</div>
             <div id="ctl00_cphRoblox_DescriptionPanel">
                 <div id="DescriptionLabel">Description:</div>
                 <div id="Description">{{$ItemData->about}}</div>

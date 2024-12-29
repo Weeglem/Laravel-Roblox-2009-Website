@@ -3,6 +3,7 @@
   margin-top: 0;
   text-transform: none;
   text-decoration: none;
+    background: #f8fcff url(/img/bg_gradient.jpg) repeat-x top;
 }
 
 a {
@@ -92,6 +93,11 @@ input.Text {
 #Container {
   margin: 0 auto;
   width: 900px;
+}
+
+#MasterContainer {
+    width: 100%;
+    background: url("/img/bg_clouds.jpg") no-repeat center top;
 }
 
 #Header {

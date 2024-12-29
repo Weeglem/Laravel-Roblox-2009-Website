@@ -21,7 +21,7 @@
                 </div>
 
                 <div id="LastUpdate">Updated: {{$ItemData->LastUpdated()}}</div>
-                <div id="Favorited">Favorited: {{$ItemData->favorites_count}} times</div>
+                <div id="Favorited">Favorited: <span id="FavoritesCount">{{$ItemData->favorites_count}}</span> times</div>
                 <div id="ctl00_cphRoblox_VisitedPanel" class="Visited">Visited: 0 times</div>
                 <div id="ctl00_cphRoblox_DescriptionPanel">
                     <div id="DescriptionLabel">Description:</div>
@@ -47,22 +47,16 @@
                     <img src="{{asset("img/Placeholder/ThumbnailGameBig.png")}}" border="0" alt="Game Thumbnail">
                 </a>
             </div>
-            <div id="Actions_Place">
 
-                @if($Favorited == true)
-                    <a id="FavoriteThisButton">Remove from Favorites</a>
-                @else
-                    <a id="FavoriteThisButton">Favorite</a>
-                @endif
+            {{-- Favorite button --}}
+            <div id="Actions_Place">
+                <a id="FavoriteThisButton">{{$Favorited == true ? "Remove from Favorites" : "Favorite"}}</a>
             </div>
+
             <div id="ctl00_cphRoblox_PlayGames" class="PlayGames">
                 <div style="text-align: center; margin: 1em 5px;">
 
-
-
-
                    {{--https://www.youtube.com/watch?v=PPibM6VkI7Y --}}
-
                     <!--Public access-->
                     @if($GameAccess == 0)
                     <span id="ctl00_cphRoblox_PlaceAccessIndicator_Public" style="display:inline;">
@@ -87,30 +81,25 @@
                     </span>
                     @endif
 
-
                     @if($ItemConfig->is_copylocked == 1)
                         <img id="ctl00_cphRoblox_CopyLockedIcon" src="{{asset("img/CopyLocked.png")}}" alt="CopyLocked" border="0">Copy Protection: CopyLocked
                     @else
                         <img id="ctl00_cphRoblox_CopySharedIcon" src="{{asset("img/Shared.png")}}" alt="Shared" border="0">Copy Protection: Shared
                     @endif
-
                 </div>
 
             <div id="ctl00_cphRoblox_VisitButtons_ClientInstaller_Panel1" class="modalPopup" style="display: none">
         </div>
 
-
-
-
+        {{-- Play buttons --}}
         <div id="ctl00_cphRoblox_VisitButtons_FancyButtons">
             @if($GameAccess == 0 || $GameAccess == 2)
-            <div id="ctl00_cphRoblox_VisitButtons_VisitMPButton2" style="display: inline; width: 10px;">
+                <div id="ctl00_cphRoblox_VisitButtons_VisitMPButton2" style="display: inline; width: 10px;">
                 <input type="image" name="ctl00$cphRoblox$VisitButtons$MultiplayerVisitButtonB" id="ctl00_cphRoblox_VisitButtons_MultiplayerVisitButtonB" class="ImageButton" src="{{asset("img/buttons/Play.png")}}" alt="Visit Online" onclick="return Roblox.Client.WaitForRoblox(function() { window.location = &#39;/Login/Default.aspx?ReturnUrl=http%3a%2f%2fwww.roblox.com%2fItem.aspx%3fID%3d515406&#39; });" border="3">
             </div>
             @endif
 
-
-            @if($ItemData->game_uncopylocked)
+            @if($ItemConfig->is_copylocked == 0)
                 <div id="ctl00_cphRoblox_VisitButtons_VisitButton2" style="display: inline; width: 10px;">
                     <input type="image" name="ctl00$cphRoblox$VisitButtons$SoloVisitButtonB" id="ctl00_cphRoblox_VisitButtons_SoloVisitButtonB" class="ImageButton" src="{{asset("img/buttons/PlaySolo.png")}}" alt="Visit Solo" onclick="javascript:ROBLOX_GameLaunch_PlaySolo({{$ItemData->id}})" border="3">
                 </div>
@@ -125,8 +114,6 @@
     @endif
 
     <div style="clear: both;"></div>
-
-
 </div>
 
 <div style="margin: 10px; width: 703px;">

@@ -1,7 +1,7 @@
 const LikeButton = document.getElementById("FavoriteThisButton");
 const LikeButton_ItemID = document.getElementById("ItemIDBox").value;
 let LikeButton_ActivePing = false;
-
+const FavoritesCount = document.getElementById("FavoritesCount");
 LikeButton.addEventListener("click", function () {
 
     //DISABLE BUTTON
@@ -27,10 +27,12 @@ LikeButton.addEventListener("click", function () {
             let req = JSON.parse(Request.responseText);
             if(req.case == true){
                 //REMOVE FROM FAVS
+                FavoritesCount.innerText = parseInt(FavoritesCount.innerText) - 1;
                 LikeButton_newStatus(false);
                 LikeButton.innerText = "Favorite";
             }else{
                 //ADD TO FAVS
+                FavoritesCount.innerText = parseInt(FavoritesCount.innerText) + 1;
                 LikeButton.innerText = "Remove from Favorites";
                 LikeButton_newStatus(true);
             }

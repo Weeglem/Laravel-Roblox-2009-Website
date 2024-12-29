@@ -4,6 +4,7 @@ namespace App\Models\User;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Asset\Asset;
+use App\Models\Asset\AssetShowcase;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -16,6 +17,17 @@ class User extends Authenticatable
     public function Economy()
     {
         return $this->hasOne(Economy::class, 'user_id',"id");
+    }
+
+    public function Friends()
+    {
+        //TODO: FIX FRIENDS RELATIONSHIP
+        return $this->hasMany(Friend::class,"user_1","id");
+    }
+
+    public function Showcase()
+    {
+        return $this->hasMany(AssetShowcase::class,"user_id","id");
     }
 
     /**
