@@ -109,7 +109,7 @@
 
     @if($EditMode)
     <div id="Configuration">
-        <a href="{{route("editItem_page",["id" => $ItemData->id])}}">Configure this Game</a>
+        <a href="{{route("Asset_Edit",["ID" => $ItemData->id])}}">Configure this Game</a>
     </div>
     @endif
 

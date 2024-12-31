@@ -1,7 +1,7 @@
 @extends('Website.Templates.PageView')
 
 @section('Content')
-<form id="EditItemContainer" method="POST" action="{{ route("editItem_post",["id" => $ItemData->id ]) }}">
+<form id="EditItemContainer" method="POST" action="{{ route("Asset_Edit_post",["ID" => $ItemData->id ]) }}">
     <div id="EditItem" style="float:none;margin:0 auto;">
         <h2>Configure T-Shirt</h2>
         <div id="ItemName">
@@ -124,7 +124,7 @@
 
         <div class="Buttons">
             <button class="Button" type="submit">Update</button> &nbsp;
-            <a id="Cancel" tabindex="5" class="Button" href="">Cancel</a>
+            <a id="Cancel" tabindex="5" class="Button" href="{{route("Asset_Page",["ID" => $ItemData->id])}}">Cancel</a>
         </div>
     </div>
     @csrf

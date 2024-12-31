@@ -6,6 +6,7 @@ use App\Models\User\Friend;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Asset\Asset;
+use Illuminate\Support\Facades\Auth;
 
 class AssetConfig extends Model
 {
@@ -34,11 +35,18 @@ class AssetConfig extends Model
 
         if($this->is_friends_only == 1)
         {
-            return !Friend::friendsWith($this->asset->owner_id) ? 1 : 2;
+            if(Auth::check()){
+
+                //ACCESS IF OWNER
+                //TODO: MAKE ACCESS SEPARATE FROM DISPLAYER
+                if(Auth::id() == $this->asset->owner_id){ return 2; }
+
+                return !Friend::friendsWith($this->asset->owner_id) ? 1 : 2;
+            }else{
+                //NOT LOGGED, EXIT
+                return 1; //NO ACCESS
+            }
+
         }
-
-
-
     }
-
 }

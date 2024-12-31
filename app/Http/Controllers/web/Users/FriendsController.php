@@ -9,10 +9,10 @@ use App\Models\User\User;
 
 class FriendsController extends Controller
 {
-    //TODO: TO REQUEST
+    //MOVE TO REQUEST
     public function index($UserID)
     {
-        $Data = User::find($UserID);
+        $Data = User::findOrFail($UserID);
         $Friends = $Data->friends()->paginate(15);
 
         return view('Website.User.Friends', [

@@ -97,7 +97,7 @@
 
     @if($EditMode)
     <div id="Configuration">
-        <a href="{{route("editItem_page",["id" => $ItemData->id])}}">Configure this {{ucfirst($ItemData->type)}}</a>
+        <a href="{{route("Asset_Edit",["ID" => $ItemData->id])}}">Configure this {{ucfirst($ItemData->type)}}</a>
     </div>
     @endif
 

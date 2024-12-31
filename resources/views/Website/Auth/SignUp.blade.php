@@ -2,10 +2,10 @@
 
 @section('Content')
 <div id="Body">
-					
-	
+
+
     <div id="Registration">
-        <form id="ctl00_cphRoblox_upAccountRegistration" action="{{route("CreateAccountRoblox")}}"  method="POST">
+        <form id="ctl00_cphRoblox_upAccountRegistration" action="{{route("newAccountPost")}}"  method="POST">
                 @csrf
                 @method("post")
                 <h2>Sign Up and Play</h2>
@@ -48,6 +48,7 @@
                         </div>
                     </fieldset>
                 </div>
+            {{--
                 <div id="EnterEmail">
                     <fieldset title="Provide your email address">
                         <legend>Provide your email address</legend>
@@ -65,16 +66,17 @@
                         </div>
                     </fieldset>
                 </div>
+                --}}
                 <div class="Confirm">
                     <input name="ctl00$cphRoblox$ButtonCreateAccount" value="Register" onclick="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$cphRoblox$ButtonCreateAccount&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, false))" id="ctl00_cphRoblox_ButtonCreateAccount" tabindex="5" class="BigButton" type="submit">
                 </div>
-                
+
         </form>
     </div>
     <div id="Sidebars">
         <div id="AlreadyRegistered">
             <h3>Already Registered?</h3>
-            <p>If you just need to login, go to the <a id="ctl00_cphRoblox_HyperLinkLogin" href="{{route("LoginToRoblox")}}">Login</a> page.</p>
+            <p>If you just need to login, go to the <a id="ctl00_cphRoblox_HyperLinkLogin" href="{{route("login")}}">Login</a> page.</p>
             <p>If you have already registered but you still need to download the game installer, go directly to <a id="ctl00_cphRoblox_HyperLinkDownload" href="/download">download</a>.</p>
         </div>
         <div id="TermsAndConditions">

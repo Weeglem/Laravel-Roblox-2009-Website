@@ -30,6 +30,12 @@ class User extends Authenticatable
         return $this->hasMany(AssetShowcase::class,"user_id","id");
     }
 
+    public function notSeenMessagesCount()
+    {
+
+        return Message::where("to_id","=",$this->id)->where("seen","0")->count();
+    }
+
     /**
      * The attributes that are mass assignable.
      *

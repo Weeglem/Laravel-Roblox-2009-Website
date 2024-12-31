@@ -1,7 +1,7 @@
 @extends('Website.Templates.PageView')
 
 @section('Content')
-<form id="ConfigurePlaceContainer" method="POST" action="{{ route("editItem_post",["id" => $ItemData->id ]) }}">
+<form id="ConfigurePlaceContainer" method="POST" action="{{ route("Asset_Edit_post",["ID" => $ItemData->id ]) }}">
     <h2>Configure Place</h2>
 
     <div id="PlaceName">
@@ -113,7 +113,7 @@
 
     <div class="Buttons">
         <button class="Button" type="submit">Update</button> &nbsp;
-        <a class="Button" href="">Cancel</a>
+        <a class="Button" href="{{route("Asset_Page",["ID" => $ItemData->id])}}">Cancel</a>
     </div>
 
     @csrf

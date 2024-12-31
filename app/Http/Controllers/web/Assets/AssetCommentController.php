@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Asset\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class AssetCommentController extends Controller
 {
@@ -31,7 +32,7 @@ class AssetCommentController extends Controller
 
         $Comment = new Comment([
             "asset_id" => $request->id,
-            "user_id" => 1,
+            "user_id" => Auth::id(),
             "comment" => $request->message
         ]);
 

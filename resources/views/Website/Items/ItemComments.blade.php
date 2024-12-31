@@ -6,12 +6,14 @@
 
                 @if($ItemComments->count() > 0)
 
-                    <div id="ctl00_cphRoblox_TabbedInfo_CommentaryTab_CommentsPane_CommentsRepeater_ctl00_HeaderPagerPanel" class="HeaderPager">
+                    <div id="ctl00_cphRoblox_TabbedInfo_CommentaryTab_CommentsPane_CommentsRepeater_ctl00_HeaderPagerPanel" class="HeaderPager" style="padding:0;">
                         @if($ItemComments->currentPage() > 1)
                             <a id="ctl00_cphRoblox_TabbedInfo_CommentaryTab_CommentsPane_CommentsRepeater_ctl00_HeaderPageSelector_Back" href="{{$ItemComments->previousPageUrl()}}"><span class="NavigationIndicators"><<</span> Back </a>
                         @endif
 
-                        <span id="ctl00_cphRoblox_TabbedInfo_CommentaryTab_CommentsPane_CommentsRepeater_ctl00_HeaderPagerLabel">Page {{$ItemComments->currentPage()}} of {{$ItemComments->lastPage()}}</span>
+                        @if($ItemComments->hasMorePages())
+                            <span id="ctl00_cphRoblox_TabbedInfo_CommentaryTab_CommentsPane_CommentsRepeater_ctl00_HeaderPagerLabel">Page {{$ItemComments->currentPage()}} of {{$ItemComments->lastPage()}}</span>
+                        @endif
 
                         @if($ItemComments->hasMorePages())
                             <a id="ctl00_cphRoblox_TabbedInfo_CommentaryTab_CommentsPane_CommentsRepeater_ctl00_HeaderPageSelector_Next" href="{{$ItemComments->nextPageUrl()}}">Next <span class="NavigationIndicators">&gt;&gt;</span></a>
@@ -54,7 +56,9 @@
                                     @endif
 
                                     <!--Comment paginate-->
-                                    <span id="ctl00_cphRoblox_TabbedInfo_CommentaryTab_CommentsPane_CommentsRepeater_ctl00_HeaderPagerLabel">Page {{$ItemComments->currentPage()}} of {{$ItemComments->lastPage()}}</span>
+                                    @if($ItemComments->hasMorePages())
+                                        <span id="ctl00_cphRoblox_TabbedInfo_CommentaryTab_CommentsPane_CommentsRepeater_ctl00_HeaderPagerLabel">Page {{$ItemComments->currentPage()}} of {{$ItemComments->lastPage()}}</span>
+                                   @endif
 
                                     @if($ItemComments->hasMorePages())
                                         <!--Next page-->
@@ -74,7 +78,7 @@
                             <div id="ctl00_cphRoblox_CommentsPane_CommentsUpdatePanel">
 
                                 @if($ItemConfig->comments_allowed == 1)
-                                    <form id="ctl00_cphRoblox_CommentsPane_PostAComment" class="PostAComment" method="post" action="{{route("AddAsset_Comment",["id"=> $ItemData->id])}}">
+                                    <form id="ctl00_cphRoblox_CommentsPane_PostAComment" class="PostAComment" method="post" action="{{route("Asset_Comment_post",["id"=> $ItemData->id])}}">
                                         <h3>Comment on this Game</h3>
                                         <div class="CommentText">
                                             <textarea name="message" rows="5" cols="20" id="ctl00_cphRoblox_CommentsPane_NewCommentTextBox" class="MultilineTextBox"></textarea></div>

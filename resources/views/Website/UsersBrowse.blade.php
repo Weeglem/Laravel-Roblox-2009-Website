@@ -2,12 +2,10 @@
 
 @section('Content')
 <div id="ctl00_cphRoblox_Panel1">
-    
-	
     <form id="BrowseContainer" style="text-align:center">
         <input name="Search" type="text" maxlength="100" value="{{ Request::get('Search') }}" id="ctl00_cphRoblox_tbSearch">&nbsp;
         <button type="submit" id="ctl00_cphRoblox_lbSearch">Search</button>
-        <br><br>      
+        <br><br>
     <form>
 
     @if(count($Users) > 0)
@@ -25,7 +23,7 @@
             </tr>
 
             @foreach ($Users as $User)
-                
+
             <tr class="GridItem">
                 <td>
                     <a id="ctl00_cphRoblox_gvUsersBrowsed_ctl04_hlAvatar" title="Grimm114" href="{{route("Users_Profile_Page",["id" => $User->id])}}" style="display:inline-block;cursor:pointer;">
@@ -45,8 +43,8 @@
 
             @endforeach
 
-            
-            
+
+
 
             <tr class="GridPager">
                 <td colspan="4"><table border="0">

@@ -5,12 +5,12 @@
 	<div id="PaneNewUser">
 		<h3>New User?</h3>
 		<p>You need an account to play Roblox.</p>
-		<p>If you aren't a Roblox member then <a href="{{route("CreateAccountRoblox")}}">register</a>. It's easy and we do <em>not</em> share your personal information with anybody.</p>
+		<p>If you aren't a Roblox member then <a href="{{route("newAccount")}}">register</a>. It's easy and we do <em>not</em> share your personal information with anybody.</p>
 	</div>
 	<div id="PaneLogin">
 		<h3>Log In</h3>
 		<div class="AspNet-Login">
-			<form class="AspNet-Login" action="{{route("LoginToRoblox")}}"  method="post">
+			<form class="AspNet-Login" action="{{route("loginPage_Post")}}"  method="post">
 				<div class="AspNet-Login-UserPanel">
 					<label for="UserName" class="TextboxLabel"><em>U</em>ser Name:</label>
 					<input id="UserName" name="UserName" accesskey="u" autocomplete="off" type="text">&nbsp;

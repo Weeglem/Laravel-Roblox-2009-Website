@@ -8,6 +8,7 @@ use App\Models\Asset\Comment;
 use App\Models\User\Favorites;
 use App\Models\User\Inventory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 
 class AssetPageController extends Controller
@@ -15,27 +16,33 @@ class AssetPageController extends Controller
     public function view(Request $request)
     {
         //CALL ASSET
-        $ItemID = $request->id;
-        $Asset = Asset::with("Config","Comments")->withCount("Favorites")->find($ItemID);
+        $ItemID = $request->ID;
+        $Asset = Asset::with("Config","Comments")->withCount("Favorites")->findOrFail($ItemID);
         $AssetConfig = $Asset->config;
         $Type = strtolower($Asset->type);
         $Final = $Type == "game" ? "Website.Items.Game" : "Website.Items.Item"; //LOAD VIEW
 
         //OTHER VALS
-        $Comments = $Asset->comments()->paginate(11); //GET COMMENTS
-        $EditMode = true;  //SHOWS CONFIGURATE ITEM PANEL AND HIDES REPORT BUTTON
+        $Comments = $Asset->comments()->paginate(11);
+
+        $EditMode = false;                               //SHOWS CONFIGURATE ITEM PANEL AND HIDES REPORT BUTTON
         $Favorited = Favorites::CheckFavorite($ItemID); //GET IS FAVORITE FROM USER BOOLEAN
-        $GameAccess = $AssetConfig->AccessLevel(); //GAME ACCESS TYPES:
-                            //0 = Public,
-                            //1 = Friends not allowed,
-                            //2 = Friends you're allowed,
-                            //3 = Closed to everyone,
-        $OwnedItem = Inventory::userOwnsItem(1,$ItemID);
+
+        $GameAccess = $AssetConfig->AccessLevel();      //GAME ACCESS TYPES:
+                                                        //0 = Public,
+                                                        //1 = Friends not allowed,
+                                                        //2 = Friends you're allowed,
+                                                        //3 = Closed to everyone,
+        $OwnedItem = Auth::check() ? Inventory::userOwnsItem(Auth::id(),$ItemID) : false;
 
         //SET VARAIBLE ONLY IF TYPE IS GAME
-        if($Type == "game"){
-            //var_dump("Access level: ".$AssetConfig->AccessLevel());
-            $GameAccess = $AssetConfig->AccessLevel();
+        if($Type == "game"){ $GameAccess = $AssetConfig->AccessLevel();}
+
+        //SET EDIT MODE if owner
+        if(Auth::check()){
+            if($Asset->owner_id == Auth::id()){
+                $EditMode = true;
+            }
         }
 
         return view($Final)->with([
@@ -52,8 +59,8 @@ class AssetPageController extends Controller
 
     public function viewEdit(Request $request)
     {
-        $ItemID = $request->id;
-        $Asset = Asset::with("Config")->find($ItemID);
+        $ItemID = $request->ID;
+        $Asset = Asset::with("Config")->findOrFail($ItemID);
         $AssetConfig = $Asset->config;
         $Type = strtolower($Asset->type);
 
@@ -73,8 +80,8 @@ class AssetPageController extends Controller
     public function update(Request $request)
     {
         //GET ITEM FROM ID
-        $Asset = Asset::find($request->id);
-        $AssetConfig = AssetConfig::find($request->id);
+        $Asset = Asset::findOrFail($request->ID);
+        $AssetConfig = AssetConfig::findOrNew($request->ID);
 
         //SET MAIN ASSET CHANGE
         $Asset->name = $request->Name;    //ITEM NAME

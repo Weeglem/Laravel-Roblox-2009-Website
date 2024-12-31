@@ -7,6 +7,7 @@ use App\Models\User\Friend;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User\Inventory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
@@ -28,6 +29,11 @@ class Asset extends Model
     public function Owner()
     {
         return $this->belongsTo(User::class, 'owner_id', 'id');
+    }
+
+    public function TotalPurchases()
+    {
+        return $this->belongsTo(Inventory::class,"id","asset_id");
     }
 
     public function Config()

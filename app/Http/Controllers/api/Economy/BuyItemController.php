@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\api\Economy;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Asset\Asset;
 use App\Models\User\Economy;
 use App\Models\User\Inventory;
 use Illuminate\Http\Request;
-use Illuminate\Auth;
 use mysql_xdevapi\Exception;
 
 
@@ -15,6 +15,11 @@ class BuyItemController extends Controller
     public function buyItem(Request $request)
     {
         try {
+
+            if(!Auth::check()){
+                throw new Exception("Unauthorized", 401);
+            }
+
             $AssetID = $request->ItemID;
             $WalletType = $request->WalletType;
 
@@ -24,14 +29,14 @@ class BuyItemController extends Controller
             switch ($Item->type) {
                 //MODEL BUY
                 case "model":
-                    Economy::BuyFreeItem(1, $AssetID);
+                    Economy::BuyFreeItem(Auth::id(), $AssetID);
                     break;
 
                 case "cloth":
 
                     //ADD FREE ITEM SUPPORT
                     $WalletType = $WalletType == "robux" ? "robux" : "ticket";
-                    Economy::BuyWalletItem(1, $AssetID, $WalletType);
+                    Economy::BuyWalletItem(Auth::id(), $AssetID, $WalletType);
                     break;
 
                 default:
@@ -43,6 +48,7 @@ class BuyItemController extends Controller
                 "message" => "Item was added succesfuly to your inventory.",
                 "code" => 200,
             ]);
+
         }catch (\Exception $exception){
             return response()->json([
                 "message" => $exception->getMessage(),
