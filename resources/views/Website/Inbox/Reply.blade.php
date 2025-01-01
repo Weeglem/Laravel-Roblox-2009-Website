@@ -8,6 +8,9 @@
                     @include("Website.Inbox.MessageBox.Success")
                 @else
                     @include("Website.Inbox.MessageBox.MessageReader")
+                    @section("MessageType","Your Message")
+                    @section("Subject","Re: ".$MessageData->subject)
+                    @php($DisabledSubject = false)
                     @include("Website.Inbox.MessageBox.MessageEditor")
                 @endif
             </div>

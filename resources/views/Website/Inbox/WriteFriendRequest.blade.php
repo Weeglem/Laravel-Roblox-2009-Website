@@ -7,10 +7,11 @@
                 @if(session("MessageSuccess"))
                     @include("Website.Inbox.MessageBox.Success")
                 @else
-                    @section("MessageType","Your Message")
-                    @section("Subject",$MessageData->subject ?? "")
-                    @php($DisabledSubject = false)
+                    @section("MessageType","Your Friend Request")
+                    @section("Subject","Friend request")
+                    @php($DisabledSubject = true)
                     @include("Website.Inbox.MessageBox.MessageEditor")
+
                 @endif
             </div>
         </div>
