@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\web\My\Inbox;
 
 use App\Http\Controllers\Controller;
+use App\Models\User\Friend;
 use App\Models\User\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User\User;
+use Mockery\Exception;
 
 class InboxController extends Controller
 {
@@ -48,39 +50,56 @@ class InboxController extends Controller
         //NEW MESSAGE
         if(isset($UserID)) {
             $UserData = User::findOrFail($UserID);
+
             return view("Website.Inbox.Write",[
                 "UserData" => $UserData,
                 "linkAPI" => route("Inbox_NewMessage_post",["UserID"=>$UserData->id]),
             ]);
         }
 
-        $MessageData = Message::findOrFail($MessageID);
-
-        if($MessageData->to_id != Auth::id()){
-            return redirect()->back()->withErrors(["You do not own this message"]);
-        }
-
-        if($MessageData->seen == 0) {
-            $MessageData->update(["seen" => 1]);
-        }
-
-
         //SEE MESSAGE
         if(isset($MessageID)) {
-            return view("Website.Inbox.See",[
+            $MessageData = Message::findOrFail($MessageID);
+
+
+            if($MessageData->to_id != Auth::id()){
+                throw new \Exception("You dont own this message");
+                //return redirect()->back()->withErrors(["You do not own this message"]);
+            }
+
+            if($MessageData->seen == 0) {$MessageData->update(["seen" => 1]);}
+
+            $View = $MessageData->friend_request == 1 ? "Website.Inbox.SeeFriendRequest" : "Website.Inbox.See";
+
+            return view($View,[
                 "UserData" => $MessageData->from,
                 "MessageData" => $MessageData,
             ]);
         }
 
-        //REPLY MESSAGE
+        //REPLY TO MESSAGE
         if(isset($ReplyID)) {
+            $MessageData = Message::findOrFail($ReplyID);
+
+            if($MessageData->to_id != Auth::id()){
+                return redirect()->back()->withErrors(["You do not own this message"]);
+            }
+
+            if($MessageData->seen == 0) {
+                $MessageData->update(["seen" => 1]);
+            }
+
+
+
             return view("Website.Inbox.Reply",[
                 "UserData" => $MessageData->from,
                 "MessageData" => $MessageData,
                 "linkAPI" => route("Inbox_NewMessage_post",["MessageID"=>$MessageData->id]),
             ]);
         }
+
+
+
     }
 
     public function newMessage(Request $request)
@@ -100,33 +119,44 @@ class InboxController extends Controller
 
     }
 
+
     public function deleteMessages(Request $request)
     {
+        $MessagesArray = array();
         if(!Auth::check()){ return redirect()->route("login")->with("notLogged","Please Login First"); }
 
-        //DELETE SINGLE MESSAGE
-        $MessageID = $request->ID;
-        if(!is_null($MessageID)) {
-            $Mess = Message::find($MessageID);
-            if($Mess->to_id != Auth::id()){  return redirect()->route("InboxPage")->with("error","Unauthorised"); }
-            $Mess->seen = 1;
-            $Mess->deleted = 1;
-            $Mess->save();
-            return redirect()->route("InboxPage");
+        //APPEND ID TO ARRAY
+        if(!is_null($request->ID)) {
+            $MessagesArray[] = $request->ID;
         }
 
-        //DELETE MULTIPLE MESSAGES
-        $Messages = $request->DeleteCheckbox;
-        if(is_null($Messages) || count($Messages) <= 0) {  return redirect()->route("InboxPage")->with("error","No messages selected"); }
-
-        foreach($Messages as $Message)
+        if(!is_null($request->DeleteCheckbox))
         {
-            //todo: keep messages?
-            $Mess = Message::find($Message);
-            if($Mess->to_id != Auth::id()){  return redirect()->route("InboxPage")->with("error","Unauthorised"); }
-            $Mess->seen = 1;
-            $Mess->deleted = 1;
-            $Mess->save();
+            foreach($request->DeleteCheckbox as $MessageID) {
+                $MessagesArray[] = $MessageID;
+            }
+        }
+
+        if(count($MessagesArray) <= 0 ) {
+            //TODO: Fix message not showind up
+            return redirect()->route("InboxPage")->withErrors("No Messages Found");
+        }
+
+        //DELETE LOOP
+
+        foreach($MessagesArray as $Message) {
+            //TODO: Sanitize ?
+            if(!filter_var($Message, FILTER_VALIDATE_INT)) {
+                return;
+            }
+
+            if(Message::find($Message)->exists){
+                try {
+                    Message::find($Message)->deleteMessage();
+                }catch (Exception $e) {
+                    //dont do shit
+                }
+            }
         }
 
         return redirect()->route("InboxPage");
